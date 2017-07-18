@@ -16,8 +16,11 @@ Prerequisites
 * OpenVR
 * SDL 
 
-Build instructions
-------------------
+### Install prerequisites
+
+* Download Qt5
+
+### Build prerequisites
 
 * Build SDL
 
@@ -31,8 +34,6 @@ git clone https://github.com/spurious/SDL-mirror.git
 git clone https://github.com/ValveSoftware/openvr.git
 ```
 
-* Download Qt5
-
 * Build VTK8:
 
 ```
@@ -45,8 +46,28 @@ cmake \
 make -j4
 ```
 
+
+Building
+--------
+
+* Build QtVTKOpenGLOpenVR
+
+```
+mkdir QtVTKOpenGLOpenVR-build && cd $_
+
+cmake \
+  -DQt5:PATH=/path/to/Qt5.7.1/5.7/gcc_64/lib/cmake/Qt5 \
+  -DCMAKE_BUILD_TYPE:STRING=Release \
+  ../QtVTKOpenGLOpenVR
+
+make
+```
+
 Usage
 -----
 
-*To be done*
+```
+cd QtVTKOpenGLOpenVR-build
+./experiment
+```
 
