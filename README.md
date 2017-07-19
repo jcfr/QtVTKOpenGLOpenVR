@@ -10,7 +10,7 @@ See http://wiki.imaging.robarts.ca/index.php/Main_Page
 Overview
 --------
 
-The _traditional_ approach consists in (1) associating every actors of the source renderer with the OpenVR renderer
+The _traditional_ approach consists in both (1) associating every actors of the source renderer with the OpenVR renderer
 and (2) starting the OpenVR interactor. This approach prevents the user from updating actors associated with the source
 renderer while they are rendered in the OpenVR window.
 
@@ -18,10 +18,12 @@ This project intends to explore few approaches allowing to maintain interactivit
 window.
 
 It is understood that at first performance may be degraded. That said, we anticipate that hardware performance will
-improve and that this approach will be viable in the short term.
+improve and that this approach will be viable in the near term.
 
 Proposed approaches
 -------------------
+
+#### Approach 1: Remove SDL requirements + sync Qt event loop with VR + sync actors
 
 _to be done_
 
