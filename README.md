@@ -1,11 +1,24 @@
 QtVTKOpenGLOpenVR
 =================
 
-Experimenting with creating Qt application embedding both OpenGL and OpenVR render windows.
+Experimenting with creating Qt application synchronizing VTK OpenGL renderer with VTK OpenVR renderer.
 
 Project created while attending the 26th Slicer Project Week taking place at the Robarts Scientific Institute in London, Ontario.
 
 See http://wiki.imaging.robarts.ca/index.php/Main_Page
+
+Overview
+--------
+
+The _traditional_ approach consists in (1) associating every actors of the source renderer with the OpenVR renderer
+and (2) starting the OpenVR interactor. This approach prevents the user from updating actors associated with the source
+renderer while they are rendered in the OpenVR window.
+
+This project intends to explore few approaches allowing to maintain interactivity with both the OpenGL and OpenVR render
+window.
+
+It is understood that at first performance may be degraded. That said, we anticipate that hardware performance will
+improve and that this approach will be viable in the short term.
 
 
 Prerequisites
