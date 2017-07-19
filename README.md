@@ -76,6 +76,7 @@ cmake \
   -DBUILD_TESTING:BOOL=OFF \
   -DModule_vtkGUISupportQt:BOOL=ON \
   -DModule_vtkRenderingOpenVR:BOOL=ON \
+  -DVTK_OPENVR_OBJECT_FACTORY:BOOL=OFF \
   -DVTK_QT_VERSION:STRING=5 \
   -DQt5_DIR:PATH=${Qt5_DIR} \
   -DOPENVR_INCLUDE_DIR:PATH=${OPENVR_DIR}/headers/ \
@@ -116,8 +117,8 @@ Usage
 ```
 cd QtVTKOpenGLOpenVR-build
 
-SDL_DIR=/home/jcfr/Projects/SDL-install/lib
-LD_LIBRARY_PATH=${SDL_DIR}
+SDL_DIR=/home/jcfr/Projects/SDL-install
+export LD_LIBRARY_PATH=${SDL_DIR}/lib
 
 ./experiment
 ```

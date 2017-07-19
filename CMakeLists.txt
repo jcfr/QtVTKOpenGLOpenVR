@@ -5,6 +5,13 @@ project(QtVTKOpenGLOpenVR)
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 find_package(VTK REQUIRED)
+vtk_module_config(VTK
+  vtkCommonCore
+  vtkGUISupportQt
+  vtkInteractionStyle
+  vtkRendering${VTK_RENDERING_BACKEND}
+  vtkRenderingOpenVR
+)
 include(${VTK_USE_FILE})
 
 add_executable(experiment main.cpp)
