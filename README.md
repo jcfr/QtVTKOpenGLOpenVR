@@ -20,6 +20,12 @@ window.
 It is understood that at first performance may be degraded. That said, we anticipate that hardware performance will
 improve and that this approach will be viable in the short term.
 
+Proposed approaches
+-------------------
+
+_to be done_
+
+
 
 Prerequisites
 -------------
