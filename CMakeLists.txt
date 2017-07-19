@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.8)
 
 project(QtVTKOpenGLOpenVR)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 find_package(VTK REQUIRED)
@@ -14,7 +17,11 @@ vtk_module_config(VTK
 )
 include(${VTK_USE_FILE})
 
-add_executable(experiment main.cpp)
+add_executable(experiment
+  ctkCallback.cpp
+  ctkCallback.h
+  main.cpp
+  )
 target_link_libraries(experiment
   Qt5::Widgets
   ${VTK_LIBRARIES}
