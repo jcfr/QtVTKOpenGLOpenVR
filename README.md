@@ -93,14 +93,17 @@ Building
 * Build QtVTKOpenGLOpenVR
 
 ```
-mkdir QtVTKOpenGLOpenVR-build && cd $_
+mkdir -p QtVTKOpenGLOpenVR-build
+cd QtVTKOpenGLOpenVR-build
 
-VTK_DIR=/home/jcfr/Projects/VTK-OpenVR-build
 Qt5_DIR=/home/jcfr/Software/Qt5.9.1/5.9.1/gcc_64/lib/cmake/Qt5
+SDL_DIR=/home/jcfr/Projects/SDL-install/
+VTK_DIR=/home/jcfr/Projects/VTK-OpenVR-build
 
 cmake \
-  -DQt5:PATH=${Qt5_DIR} \
+  -DQt5_DIR:PATH=${Qt5_DIR} \
   -DVTK_DIR:PATH=${VTK_DIR} \
+  -DSDL2_LIBRARY:FILEPATH=${SDL_DIR}/lib/libSDL2-2.0.so.0.4.1 \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   ../QtVTKOpenGLOpenVR
 
@@ -112,6 +115,10 @@ Usage
 
 ```
 cd QtVTKOpenGLOpenVR-build
+
+SDL_DIR=/home/jcfr/Projects/SDL-install/lib
+LD_LIBRARY_PATH=${SDL_DIR}
+
 ./experiment
 ```
 
