@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QSlider>
 #include <QSurfaceFormat>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -127,53 +128,73 @@ struct CallbackData
 };
 
 //-----------------------------------------------------------------------------
-void startVR(vtkOpenVRRenderWindow* vrRenWin, vtkRenderer* vrRen)
-{
-//  vrRenWin->InitializeViewFromCamera(srcRenderer->GetActiveCamera());
-
-//  vtkActorCollection* acol = srcRenderer->GetActors();
-//  vtkCollectionSimpleIterator pit;
-//  vtkActor* actor;
-//  for (acol->InitTraversal(pit); (actor = acol->GetNextActor(pit));)
-//  {
-//    actor->ReleaseGraphicsResources(NULL);
-//    vrRen->AddActor(actor);
-//    // always use shift scale, everyone should
-//    vtkOpenGLPolyDataMapper* pdm = vtkOpenGLPolyDataMapper::SafeDownCast(actor->GetMapper());
-//    if (pdm)
-//    {
-//      pdm->SetVBOShiftScaleMethod(vtkOpenGLVertexBufferObject::AUTO_SHIFT_SCALE);
-//    }
-//  }
-  vrRenWin->Initialize();
-  if (vrRenWin->GetHMD())
-  {
-    vrRenWin->Render();
-    vrRen->ResetCamera();
-    vrRenWin->GetInteractor()->Start();
-  }
-//  for (acol->InitTraversal(pit); (actor = acol->GetNextActor(pit));)
-//  {
-//    actor->ReleaseGraphicsResources(vrRenWin);
-//  }
-}
-
-//-----------------------------------------------------------------------------
 struct VRCallbackData
 {
-  VRCallbackData(vtkOpenVRRenderWindow* vrRenWin, vtkRenderer* vrRen):
-    vrRenWin(vrRenWin), vrRen(vrRen){}
+  VRCallbackData(vtkOpenVRRenderWindow* vrRenWin, vtkRenderer* vrRen, QTimer* vrLoop):
+    vrRenWin(vrRenWin), vrRen(vrRen), vrLoop(vrLoop){}
   vtkOpenVRRenderWindow* vrRenWin;
   vtkRenderer* vrRen;
+  QTimer* vrLoop;
 };
 
 //-----------------------------------------------------------------------------
 void startVRCallback(void * data)
 {
   VRCallbackData* cbData = reinterpret_cast<VRCallbackData*>(data);
-  startVR(cbData->vrRenWin, cbData->vrRen);
+
+  vtkOpenVRRenderWindow* vrRenWin = cbData->vrRenWin;
+  vtkRenderer* vrRen = cbData->vrRen;
+  QTimer* vrLoop = cbData->vrLoop;
+
+  //  vrRenWin->InitializeViewFromCamera(srcRenderer->GetActiveCamera());
+
+  //  vtkActorCollection* acol = srcRenderer->GetActors();
+  //  vtkCollectionSimpleIterator pit;
+  //  vtkActor* actor;
+  //  for (acol->InitTraversal(pit); (actor = acol->GetNextActor(pit));)
+  //  {
+  //    actor->ReleaseGraphicsResources(NULL);
+  //    vrRen->AddActor(actor);
+  //    // always use shift scale, everyone should
+  //    vtkOpenGLPolyDataMapper* pdm = vtkOpenGLPolyDataMapper::SafeDownCast(actor->GetMapper());
+  //    if (pdm)
+  //    {
+  //      pdm->SetVBOShiftScaleMethod(vtkOpenGLVertexBufferObject::AUTO_SHIFT_SCALE);
+  //    }
+  //  }
+    vrRenWin->Initialize();
+    if (vrRenWin->GetHMD())
+    {
+      vrRenWin->Render();
+      vrRen->ResetCamera();
+      vrLoop->start();
+  //    vrRenWin->GetInteractor()->Start();
+    }
+  //  for (acol->InitTraversal(pit); (actor = acol->GetNextActor(pit));)
+  //  {
+  //    actor->ReleaseGraphicsResources(vrRenWin);
+  //  }
 }
 
+//-----------------------------------------------------------------------------
+struct VRLoopCallbackData
+{
+  VRLoopCallbackData(vtkOpenVRRenderWindow* vrRenWin, vtkRenderer* vrRen):
+    vrRenWin(vrRenWin), vrRen(vrRen){}
+  vtkOpenVRRenderWindow* vrRenWin;
+  vtkRenderer* vrRen;
+};
+
+//-----------------------------------------------------------------------------
+void vrLoopCallback(void * data)
+{
+  VRLoopCallbackData* cbData = reinterpret_cast<VRLoopCallbackData*>(data);
+
+  vtkOpenVRRenderWindowInteractor * vrIren =
+      vtkOpenVRRenderWindowInteractor::SafeDownCast(cbData->vrRenWin->GetInteractor());
+
+  vrIren->DoOneEvent(cbData->vrRenWin, cbData->vrRen);
+}
 
 //-----------------------------------------------------------------------------
 vtkConeSource* addActor(vtkRenderer* ren)
@@ -247,6 +268,10 @@ int main(int argc, char* argv[])
   configureVRRenderer(vrRen.GetPointer());
   addActor(vrRen.GetPointer());
 
+  // VR loop timer
+  QTimer vrLoop;
+  vrLoop.setInterval(10);
+
   // Connection
   ctkCallback callback(onHeightChangedCallback);
   CallbackData cbData(renWin.GetPointer(), coneSource, slider);
@@ -254,9 +279,14 @@ int main(int argc, char* argv[])
   QObject::connect(slider, SIGNAL(valueChanged(int)), &callback, SLOT(invoke()));
 
   ctkCallback vrCallback(startVRCallback);
-  VRCallbackData vrcbData(vrRenWin.GetPointer(), vrRen.GetPointer());
+  VRCallbackData vrcbData(vrRenWin.GetPointer(), vrRen.GetPointer(), &vrLoop);
   vrCallback.setCallbackData(&vrcbData);
   QObject::connect(startVrButton, SIGNAL(clicked(bool)), &vrCallback, SLOT(invoke()));
+
+  ctkCallback vrLpCallback(vrLoopCallback);
+  VRLoopCallbackData vrLoopCbData(vrRenWin.GetPointer(), vrRen.GetPointer());
+  vrLpCallback.setCallbackData(&vrLoopCbData);
+  QObject::connect(&vrLoop, SIGNAL(timeout()), &vrLpCallback, SLOT(invoke()));
 
   return app.exec();
 }
