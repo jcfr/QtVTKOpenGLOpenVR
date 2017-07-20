@@ -4,6 +4,7 @@
 #include <QSurfaceFormat>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QTimer>
 
 // CTK includes
 #include <ctkCallback.h>
@@ -24,6 +25,7 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkSphereSource.h>
+#include <vtkProperty.h>
 
 // XXX To avoid error like the following, "QVTKOpenGLWidget.h" *MUST* be included after "vtkOpenVRRenderWindow.h"
 //
@@ -60,14 +62,18 @@ void configureRenderer(vtkRenderer* ren)
   ren->SetBackground2(0.7, 0.7, 0.7);
 
   vtkNew<vtkSphereSource> sphere;
+  sphere->SetThetaResolution(100);
+  sphere->SetPhiResolution(100);
 
   vtkNew<vtkPolyDataMapper> mapper;
   mapper->SetInputConnection(sphere->GetOutputPort());
 
   vtkNew<vtkActor> actor;
+  actor->GetProperty()->SetColor(1, 0, 0);
   actor->SetMapper(mapper.GetPointer());
 
   ren->AddActor(actor.GetPointer());
+  ren->SetBackground(0, 0, 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -194,11 +200,16 @@ int main(int argc, char* argv[])
   // Create vtkOpenVRRenderWindow
   vtkNew<vtkOpenVRRenderWindow> vrRenWin;
 
+  QTimer timer;
+
   // Connection
   ctkCallback callback(sendToOpenVRCallback);
   CallbackData cbData(ren.GetPointer(), vrRenWin.GetPointer());
   callback.setCallbackData(&cbData);
   QObject::connect(sync, SIGNAL(clicked()), &callback, SLOT(invoke()));
+  //QObject::connect(&timer, SIGNAL(timeout()), &callback, SLOT(invoke()));
+
+  timer.start(100);
 
   return app.exec();
 }
