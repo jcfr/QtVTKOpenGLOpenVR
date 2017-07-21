@@ -11,6 +11,7 @@
 
 // VTK includes
 #include <vtkActor.h>
+#include <vtkConeSource.h>
 #include <vtkCullerCollection.h>
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkLight.h>
@@ -24,7 +25,6 @@
 #include <vtkPolyDataMapper.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkSphereSource.h>
 #include <vtkProperty.h>
 
 // XXX To avoid error like the following, "QVTKOpenGLWidget.h" *MUST* be included after "vtkOpenVRRenderWindow.h"
@@ -61,12 +61,11 @@ void configureRenderer(vtkRenderer* ren)
   ren->SetGradientBackground(1);
   ren->SetBackground2(0.7, 0.7, 0.7);
 
-  vtkNew<vtkSphereSource> sphere;
-  sphere->SetThetaResolution(100);
-  sphere->SetPhiResolution(100);
+  vtkNew<vtkConeSource> coneSource;
+  coneSource->Update();
 
   vtkNew<vtkPolyDataMapper> mapper;
-  mapper->SetInputConnection(sphere->GetOutputPort());
+  mapper->SetInputConnection(coneSource->GetOutputPort());
 
   vtkNew<vtkActor> actor;
   actor->GetProperty()->SetColor(1, 0, 0);
