@@ -148,20 +148,21 @@ void startVRCallback(void * data)
 
   //  vrRenWin->InitializeViewFromCamera(srcRenderer->GetActiveCamera());
 
-  //  vtkActorCollection* acol = srcRenderer->GetActors();
-  //  vtkCollectionSimpleIterator pit;
-  //  vtkActor* actor;
-  //  for (acol->InitTraversal(pit); (actor = acol->GetNextActor(pit));)
-  //  {
-  //    actor->ReleaseGraphicsResources(NULL);
-  //    vrRen->AddActor(actor);
-  //    // always use shift scale, everyone should
-  //    vtkOpenGLPolyDataMapper* pdm = vtkOpenGLPolyDataMapper::SafeDownCast(actor->GetMapper());
-  //    if (pdm)
-  //    {
-  //      pdm->SetVBOShiftScaleMethod(vtkOpenGLVertexBufferObject::AUTO_SHIFT_SCALE);
-  //    }
-  //  }
+//    vtkActorCollection* acol = srcRenderer->GetActors();
+    vtkActorCollection* acol = vrRen->GetActors();
+    vtkCollectionSimpleIterator pit;
+    vtkActor* actor;
+    for (acol->InitTraversal(pit); (actor = acol->GetNextActor(pit));)
+    {
+      actor->ReleaseGraphicsResources(NULL);
+      vrRen->AddActor(actor);
+      // always use shift scale, everyone should
+      vtkOpenGLPolyDataMapper* pdm = vtkOpenGLPolyDataMapper::SafeDownCast(actor->GetMapper());
+      if (pdm)
+      {
+        pdm->SetVBOShiftScaleMethod(vtkOpenGLVertexBufferObject::AUTO_SHIFT_SCALE);
+      }
+    }
     vrRenWin->Initialize();
     if (vrRenWin->GetHMD())
     {
@@ -270,7 +271,7 @@ int main(int argc, char* argv[])
 
   // VR loop timer
   QTimer vrLoop;
-  vrLoop.setInterval(10);
+  vrLoop.setInterval(1);
 
   // Connection
   ctkCallback callback(onHeightChangedCallback);
